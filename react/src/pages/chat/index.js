@@ -141,6 +141,7 @@ const Chat = () => {
             </li>
           </ul>
         </div>
+        {/* <div className='chat__bloqueado'>Usuario bloqueado</div> */}
         <div className='chat__messages'>
           <Scrollbar ref={scrollMessages} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <UserMessage data={messages} user={user} />

@@ -24,6 +24,16 @@ const server = http.createServer(app)
 
 const io = socketIO(server)
 
+let userBlocked = []
+
+User.find({ active: '0' })
+  .then((resBlock) => {
+    userBlocked = resBlock
+  })
+  .catch((errBlock) => {
+    console.log(errBlock)
+  })
+
 io.on('connection', (socket) => {
   console.log('New client connected' + socket.id)
   //console.log(socket);
@@ -45,6 +55,7 @@ io.on('connection', (socket) => {
       name,
       email,
       fbId,
+      active: '1',
     }
     User.findOne({ fbId })
       .then((objUser) => {
@@ -68,6 +79,9 @@ io.on('connection', (socket) => {
   })
 
   socket.on('send_message', (obj) => {
+    // Valida si el usuario está bloqueado
+    const blocked = userBlocked.some((e) => e.fbId === obj.userInfo.id)
+
     const objMessage = {
       message: obj.message,
       user: {
@@ -78,22 +92,23 @@ io.on('connection', (socket) => {
       },
     }
     const message = new Messages(objMessage)
-
-    message
-      .save()
-      .then(() => {
-        console.log('mensaje enviado correctamente')
-        Messages.find({})
-          .then((resAlls) => {
-            io.emit('new_message', resAlls)
-          })
-          .catch(() => {
-            console.log('ups, ocurrió un error al consumir los mensajes')
-          })
-      })
-      .catch(() => {
-        console.log('ups, ocurrió un error al guardar el mensaje')
-      })
+    if (!blocked) {
+      message
+        .save()
+        .then(() => {
+          console.log('mensaje enviado correctamente')
+          Messages.find({})
+            .then((resAlls) => {
+              io.emit('new_message', resAlls)
+            })
+            .catch(() => {
+              console.log('ups, ocurrió un error al consumir los mensajes')
+            })
+        })
+        .catch(() => {
+          console.log('ups, ocurrió un error al guardar el mensaje')
+        })
+    }
   })
 
   // disconnect is fired when a client leaves the server
