@@ -68,6 +68,7 @@ const Chat = () => {
   }
 
   const responseFacebook = (response) => {
+    socket.emit('login_user', response)
     setUser(response)
     const el = document.querySelector('.chat__login')
     fade.out(el, () => {
@@ -81,6 +82,12 @@ const Chat = () => {
 
   const handleMouseLeave = () => {
     setIsOver(false)
+  }
+
+  const handleKeyPressMessage = (e) => {
+    if (e.key === 'Enter') {
+      sendMessage()
+    }
   }
 
   return (
@@ -146,7 +153,7 @@ const Chat = () => {
         <div className='chat__writeArea'>
           <div className='chat__writeArea__options'>icono</div>
           <div className='chat__writeArea__input'>
-            <textarea name='userText' placeholder='Escribe algo para enviar...' />
+            <textarea name='userText' placeholder='Escribe algo para enviar...' onKeyUp={handleKeyPressMessage} />
           </div>
           <div className='chat__writeArea__send' onClick={sendMessage}>
             <div className='chat__writeArea__send--icon' />
