@@ -8,11 +8,7 @@ import { GoHeart } from 'react-icons/go'
 import fade from 'fade'
 import UserMessage from '../../components/user-message'
 
-const socket = io('http://localhost:3001')
-
-socket.on('new_message', (response) => {
-  console.log(response)
-})
+let socket
 
 const Chat = () => {
   const [messages, setMessages] = useState([])
@@ -21,18 +17,34 @@ const Chat = () => {
 
   const scrollMessages = useRef(null)
 
+  // Defino que se inicialice el Socket.io
   useEffect(() => {
-    console.log(messages)
-    /*
+    socket = io('http://localhost:3001')
+    // Cargar mensajes
+    socket.emit('load_messages')
+
+    // Chau chau
+    return () => {
+      socket.emit('disconnect')
+      socket.off()
+    }
+  }, [])
+
+  // Eventos a escuchar para el socket.io
+  useEffect(() => {
+    // A penas carga la web mostrar el log de msg
+    socket.on('loaded_messages', (response) => {
+      setMessages(response)
+    })
+
+    // Recibo los mensajes de los usuarios
     socket.on('new_message', (response) => {
       console.log('recií mensaje')
-
-      // const obj = { ...response }
-      // setMessages([...messages, obj])
+      setMessages(response)
     })
-    */
-  }, [messages])
+  }, [])
 
+  // Si los mensajes ya son más largos para poner el scroll
   useEffect(() => {
     if (messages.length > 4 && !isOVer) {
       scrollMessages.current.scrollToBottom()
@@ -41,6 +53,7 @@ const Chat = () => {
 
   const sendMessage = () => {
     const text = document.getElementsByName('userText')[0].value
+    // validar si esl mensaje no es vaciío fn()
 
     const obj = {
       userInfo: user,
@@ -51,7 +64,6 @@ const Chat = () => {
     }
 
     socket.emit('send_message', obj)
-    setMessages([...messages, obj])
     document.getElementsByName('userText')[0].value = ''
   }
 
@@ -128,11 +140,7 @@ const Chat = () => {
         </div>
         <div className='chat__messages'>
           <Scrollbar ref={scrollMessages} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-            {messages.map((e, i) => (
-              <div className='chat__messages--row' key={i}>
-                <UserMessage data={e} logged={e.userInfo.id === user.id} />
-              </div>
-            ))}
+            <UserMessage data={messages} user={user} />
           </Scrollbar>
         </div>
         <div className='chat__writeArea'>

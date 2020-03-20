@@ -12,10 +12,12 @@
     background-color: #f9f9f9;
     &--row {
       margin: 35px 15px 35px 35px;
+      overflow: hidden;
     }
     &__user {
       display: flex;
       flex-wrap: wrap;
+      margin-bottom: 15px;
       &--avatar {
         width: 32px;
         height: 32px;
@@ -81,7 +83,7 @@
         margin-left: 42px;
         display: flex;
         align-items: center;
-        margin-top: 8px;
+        margin-top: 3px;
         &--separator {
           width: 3px;
           height: 1px;

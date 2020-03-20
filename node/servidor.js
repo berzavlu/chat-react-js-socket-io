@@ -9,19 +9,21 @@ const server = http.createServer(app)
 
 const io = socketIO(server)
 
+let arr = []
+
 io.on('connection', (socket) => {
   console.log('New client connected' + socket.id)
   //console.log(socket);
-  /*
-  socket.on('get_messages', () => {
-    io.sockets.emit('messages')
+
+  socket.on('load_messages', () => {
+    io.sockets.emit('loaded_messages', arr)
   })
-  */
 
   socket.on('send_message', (obj) => {
     obj.status = true
+    arr.push(obj)
     console.log('mensaje enviado correctamente')
-    io.emit('new_message', obj)
+    io.emit('new_message', arr)
     // collection_messages.insert([message]).then(() => {
     // }).catch(ups => console.log(ups))
   })
