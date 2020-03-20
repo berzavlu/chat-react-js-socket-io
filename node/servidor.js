@@ -24,15 +24,19 @@ const server = http.createServer(app)
 
 const io = socketIO(server)
 
-let arr = []
-
 io.on('connection', (socket) => {
   console.log('New client connected' + socket.id)
   //console.log(socket);
 
   // Cargo los mensajes
   socket.on('load_messages', () => {
-    io.sockets.emit('loaded_messages', arr)
+    Messages.find({})
+      .then((res) => {
+        io.sockets.emit('loaded_messages', res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   })
 
   // Detecto login del usuario
@@ -64,20 +68,33 @@ io.on('connection', (socket) => {
   })
 
   socket.on('send_message', (obj) => {
-    obj.status = true
-    arr.push(obj)
-    console.log('mensaje enviado correctamente')
-    io.emit('new_message', arr)
-    // collection_messages.insert([message]).then(() => {
-    // }).catch(ups => console.log(ups))
+    const objMessage = {
+      message: obj.message,
+      user: {
+        name: obj.userInfo.name,
+        email: obj.userInfo.email,
+        id: obj.userInfo.id,
+        image: obj.userInfo.picture.data.url,
+      },
+    }
+    const message = new Messages(objMessage)
+
+    message
+      .save()
+      .then(() => {
+        console.log('mensaje enviado correctamente')
+        Messages.find({})
+          .then((resAlls) => {
+            io.emit('new_message', resAlls)
+          })
+          .catch(() => {
+            console.log('ups, ocurrió un error al consumir los mensajes')
+          })
+      })
+      .catch(() => {
+        console.log('ups, ocurrió un error al guardar el mensaje')
+      })
   })
-  /*
-  socket.on('login_user', (user) => {
-    console.log('usuario logeado correctamente')
-    io.sockets.emit('logged_user', user)
-    //io.sockets.emit('new_message')
-  })
-  */
 
   // disconnect is fired when a client leaves the server
   socket.on('disconnect', () => {

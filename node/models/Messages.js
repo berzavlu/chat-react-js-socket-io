@@ -1,16 +1,12 @@
 const mongoose = require('mongoose')
 
 const MessagesSchema = new mongoose.Schema({
-  name: {
+  message: {
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-  },
-  fbId: {
-    type: String,
+  user: {
+    type: Object,
     required: true,
   },
   date: {

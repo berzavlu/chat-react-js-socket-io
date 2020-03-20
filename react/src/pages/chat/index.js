@@ -39,7 +39,6 @@ const Chat = () => {
 
     // Recibo los mensajes de los usuarios
     socket.on('new_message', (response) => {
-      console.log('recií mensaje')
       setMessages(response)
     })
   }, [])
@@ -58,9 +57,6 @@ const Chat = () => {
     const obj = {
       userInfo: user,
       message: text,
-      date: '07/26/18',
-      time: 'hoy',
-      status: false,
     }
 
     socket.emit('send_message', obj)
