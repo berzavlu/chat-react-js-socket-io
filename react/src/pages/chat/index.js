@@ -2,19 +2,43 @@
 import React, { useState, useEffect, useRef } from 'react'
 import io from 'socket.io-client'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+import { Picker } from 'emoji-mart'
 import Scrollbar from 'react-scrollbars-custom'
+import EscapeOutside from 'react-escape-outside'
 import { TiSocialFacebook } from 'react-icons/ti'
 import { GoHeart } from 'react-icons/go'
 import fade from 'fade'
 import UserMessage from '../../components/user-message'
 
+const langEmoji = { search: 'Buscar', categories: { search: 'Résultats de recherche', recent: 'Recientes' } }
+
 let socket
+
+function insertAtCursor(field, myValue) {
+  // IE support
+  const myField = field
+  let sel
+  if (document.selection) {
+    myField.focus()
+    sel = document.selection.createRange()
+    sel.text = myValue
+  } else if (myField.selectionStart || myField.selectionStart === '0') {
+    const startPos = myField.selectionStart
+    const endPos = myField.selectionEnd
+    myField.value = myField.value.substring(0, startPos) + myValue + myField.value.substring(endPos, myField.value.length)
+    myField.selectionStart = startPos + myValue.length
+    myField.selectionEnd = startPos + myValue.length
+  } else {
+    myField.value += myValue
+  }
+}
 
 const Chat = () => {
   const [usersOnline, setUsersOnline] = useState([])
   const [messages, setMessages] = useState([])
   const [user, setUser] = useState({})
   const [isOVer, setIsOver] = useState(false)
+  const [openEmoji, setOpenEmoji] = useState(false)
 
   const scrollMessages = useRef(null)
 
@@ -54,7 +78,7 @@ const Chat = () => {
     if (messages.length > 4 && !isOVer) {
       scrollMessages.current.scrollToBottom()
     }
-  }, [messages])
+  }, [messages, isOVer])
 
   const sendMessage = () => {
     const text = document.getElementsByName('userText')[0].value
@@ -92,13 +116,33 @@ const Chat = () => {
     }
   }
 
+  const addEmoji = (emoji) => {
+    console.log(emoji.native)
+    insertAtCursor(document.getElementsByName('userText')[0], emoji.native)
+    document.getElementsByName('userText')[0].focus()
+  }
+
+  const onEmoji = () => {
+    setOpenEmoji(!openEmoji)
+    if (!openEmoji) {
+      document.getElementsByName('userText')[0].focus()
+    }
+  }
+
+  const handleEscapeOutside = (e) => {
+    if (e.target.id !== 'emojiIcons' && e.target.id !== 'userText') {
+      setOpenEmoji(false)
+      document.getElementsByName('userText')[0].focus()
+    }
+  }
+
   return (
     <div className='chat'>
       <div className='chat__area'>
         <div className='chat__users'>
           <ul>
             {usersOnline.map((e) => (
-              <li key={e.id}>
+              <li key={e.fbId}>
                 <img alt='' src={e.image} />
               </li>
             ))}
@@ -111,9 +155,17 @@ const Chat = () => {
           </Scrollbar>
         </div>
         <div className='chat__writeArea'>
-          <div className='chat__writeArea__options'>icono</div>
+          <div className='chat__writeArea__options'>
+            <div className={`chat__writeArea__options--emoji${openEmoji ? ' chat__writeArea__options--active' : ''}`} onClick={onEmoji} id='emojiIcons' />
+            <div className='chat__writeArea__options--picture' />
+            {openEmoji && (
+              <EscapeOutside onEscapeOutside={handleEscapeOutside}>
+                <Picker sheetSize={20} emojiSize={20} native i18n={langEmoji} style={{ position: 'absolute', bottom: '110px', left: '5px' }} title='Elige tu emoji' emoji='point_up' onSelect={addEmoji} />
+              </EscapeOutside>
+            )}
+          </div>
           <div className='chat__writeArea__input'>
-            <textarea name='userText' placeholder='Escribe algo para enviar...' onKeyUp={handleKeyPressMessage} />
+            <textarea name='userText' id='userText' placeholder='Escribe algo para enviar...' onKeyUp={handleKeyPressMessage} />
           </div>
           <div className='chat__writeArea__send' onClick={sendMessage}>
             <div className='chat__writeArea__send--icon' />

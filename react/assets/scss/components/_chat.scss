@@ -124,13 +124,63 @@
     }
   }
   &__writeArea {
-    padding: 30px 30px;
     border-top: 1px solid #e5e9f2;
     position: relative;
     background-color: #fff;
+    display: flex;
+    flex-direction: row;
     &__options {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      padding-top: 30px;
+      padding-left: 15px;
+      padding-right: 15px;
+      &--active {
+        background-color: whitesmoke;
+      }
+      &--emoji {
+        width: 40px;
+        height: 40px;
+        margin: 0 5px;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyBzdHJva2U9IiM5YzljOWMiIGZpbGw9IiNmZmYiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGhlaWdodD0iMWVtIiB3aWR0aD0iMWVtIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIj48L2NpcmNsZT48cGF0aCBkPSJNOCAxNHMxLjUgMiA0IDIgNC0yIDQtMiI+PC9wYXRoPjxsaW5lIHgxPSI5IiB5MT0iOSIgeDI9IjkuMDEiIHkyPSI5Ij48L2xpbmU+PGxpbmUgeDE9IjE1IiB5MT0iOSIgeDI9IjE1LjAxIiB5Mj0iOSI+PC9saW5lPjwvc3ZnPg==');
+        background-repeat: no-repeat;
+        background-size: 25px 25px;
+        background-position: 50%;
+        transition: all 0.3s ease;
+        border-radius: 50%;
+        &:hover {
+          background-color: whitesmoke;
+        }
+      }
+      &--picture {
+        width: 40px;
+        height: 40px;
+        margin: 0 5px;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyBzdHJva2U9IiM5YzljOWMiIGZpbGw9IiNmZmYiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGhlaWdodD0iMWVtIiB3aWR0aD0iMWVtIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgcng9IjIiIHJ5PSIyIj48L3JlY3Q+PGNpcmNsZSBjeD0iOC41IiBjeT0iOC41IiByPSIxLjUiPjwvY2lyY2xlPjxwb2x5bGluZSBwb2ludHM9IjIxIDE1IDE2IDEwIDUgMjEiPjwvcG9seWxpbmU+PC9zdmc+');
+        background-repeat: no-repeat;
+        background-size: 25px 25px;
+        background-position: 50%;
+        transition: all 0.3s ease;
+        border-radius: 50%;
+        &:hover {
+          background-color: whitesmoke;
+        }
+      }
     }
     &__input {
+      width: 100%;
+      padding-right: 100px;
       textarea {
         border: none;
         font: inherit;
@@ -138,6 +188,8 @@
         resize: none;
         color: #464646;
         font-weight: 400;
+        padding: 30px 0px 30px 0px;
+        margin: 0px;
         &:focus {
           outline: none;
           border: none;
@@ -160,7 +212,7 @@
       align-items: center;
       position: absolute;
       right: 30px;
-      top: 50px;
+      top: 30px;
       cursor: pointer;
       &--icon {
         background-image: url(/assets/images/plane.png);
