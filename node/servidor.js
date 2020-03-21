@@ -26,6 +26,9 @@ const io = socketIO(server)
 
 let userBlocked = []
 
+// Lista de usuarios online
+const usersOnline = []
+
 User.find({ active: '0' })
   .then((resBlock) => {
     userBlocked = resBlock
@@ -37,6 +40,9 @@ User.find({ active: '0' })
 io.on('connection', (socket) => {
   console.log('New client connected' + socket.id)
   //console.log(socket);
+
+  // Cargo los usuarios online
+  io.sockets.emit('users_online', usersOnline)
 
   // Cargo los mensajes
   socket.on('load_messages', () => {
@@ -50,10 +56,11 @@ io.on('connection', (socket) => {
   })
 
   // Detecto login del usuario
-  socket.on('login_user', ({ name, email, id: fbId }) => {
+  socket.on('login_user', ({ name, email, id: fbId, picture }) => {
     const objUsuario = {
       name,
       email,
+      image: picture.data.url,
       fbId,
       active: '1',
     }
@@ -76,6 +83,9 @@ io.on('connection', (socket) => {
       .catch(() => {
         console.log('ocurrió un error en el modelo usuario')
       })
+    usersOnline.push(objUsuario)
+    socket.fbId = fbId
+    io.sockets.emit('users_online', usersOnline)
   })
 
   socket.on('send_message', (obj) => {
@@ -111,9 +121,11 @@ io.on('connection', (socket) => {
     }
   })
 
-  // disconnect is fired when a client leaves the server
+  // Detecta cuando el usuario se desconecta
   socket.on('disconnect', () => {
-    console.log('user disconnected')
+    const index = usersOnline.findIndex((e) => e.fbId === socket.fbId)
+    usersOnline.splice(index, 1)
+    io.sockets.emit('users_online', usersOnline)
   })
 })
 
