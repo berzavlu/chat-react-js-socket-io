@@ -128,6 +128,8 @@ const Chat = () => {
     const objMsg = {
       url: images.fixed_width.url,
       preview: images['480w_still'].url,
+      height: images.fixed_width.height,
+      width: images.fixed_width.width,
     }
 
     const obj = {

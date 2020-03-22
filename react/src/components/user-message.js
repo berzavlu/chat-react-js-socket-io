@@ -97,9 +97,11 @@ class GifComponent extends React.Component {
     const { playing } = this.state
     const { data } = this.props
     const msg = JSON.parse(data.message)
+    const height = parseInt(msg.height, 10)
+    const width = parseInt(msg.width, 10)
     return (
       <div className='chat__messages__user__content'>
-        <div className='chat__messages__user__content--gif'>
+        <div className='chat__messages__user__content--gif' style={{ height: `${height}px`, width: `${width}px` }}>
           <GifPlayer gif={msg.url} still={msg.preview} pauseRef={(pause) => (this.pauseGif = pause)} onTogglePlay={(toogle) => this.tooglePlay(toogle)} autoplay={playing} />
         </div>
       </div>
