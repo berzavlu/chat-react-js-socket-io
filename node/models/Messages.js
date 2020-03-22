@@ -13,6 +13,10 @@ const MessagesSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  type: {
+    type: Number,
+    required: true,
+  },
 })
 
 const Messages = mongoose.model('Messages', MessagesSchema)

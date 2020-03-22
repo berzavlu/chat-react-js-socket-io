@@ -106,6 +106,7 @@ io.on('connection', (socket) => {
         id: obj.userInfo.id,
         image: obj.userInfo.picture.data.url,
       },
+      type: obj.type,
     }
     const message = new Messages(objMessage)
     if (!blocked) {

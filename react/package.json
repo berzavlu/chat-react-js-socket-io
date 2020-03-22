@@ -22,6 +22,7 @@
     "react-dom": "^16.13.1",
     "react-escape-outside": "^0.1.1",
     "react-facebook-login": "^4.1.1",
+    "react-gif-player": "^0.4.2",
     "react-giphy-searchbox": "^1.1.0",
     "react-icons": "^3.9.0",
     "react-router": "^5.1.2",

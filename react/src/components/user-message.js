@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable no-return-assign */
 import React from 'react'
 import moment from 'moment'
+import GifPlayer from 'react-gif-player'
 
 moment.locale('es')
 
@@ -21,6 +23,9 @@ const getActions = () => {
 }
 
 const getMessages = (e) => {
+  if (e.type === 2) {
+    return <GifComponent data={e} />
+  }
   return (
     <div className='chat__messages__user__content'>
       <div className='chat__messages__user__content--text'>{e.message}</div>
@@ -54,6 +59,52 @@ const UserMessage = ({ user, data }) => {
       })}
     </div>
   )
+}
+
+class GifComponent extends React.Component {
+  constructor(props) {
+    super(props)
+    const { data } = this.props
+    const now = moment(new Date())
+    const end = moment(data.date)
+    const duration = moment.duration(now.diff(end))
+    const timeAgo = duration.asSeconds() < 60
+    this.state = { playing: timeAgo }
+  }
+
+  componentDidMount() {
+    const _this = this
+    if (_this.state.playing) {
+      setTimeout(() => {
+        _this.setState({ playing: false })
+        _this.pauseGif()
+      }, 16000)
+    }
+  }
+
+  tooglePlay(toogle) {
+    this.setState({ playing: toogle })
+    const _this = this
+    if (toogle) {
+      setTimeout(() => {
+        _this.setState({ playing: false })
+        _this.pauseGif()
+      }, 16000)
+    }
+  }
+
+  render() {
+    const { playing } = this.state
+    const { data } = this.props
+    const msg = JSON.parse(data.message)
+    return (
+      <div className='chat__messages__user__content'>
+        <div className='chat__messages__user__content--gif'>
+          <GifPlayer gif={msg.url} still={msg.preview} pauseRef={(pause) => (this.pauseGif = pause)} onTogglePlay={(toogle) => this.tooglePlay(toogle)} autoplay={playing} />
+        </div>
+      </div>
+    )
+  }
 }
 
 export default UserMessage

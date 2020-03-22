@@ -89,6 +89,7 @@ const Chat = () => {
     const obj = {
       userInfo: user,
       message: text,
+      type: 1,
     }
 
     socket.emit('send_message', obj)
@@ -123,8 +124,19 @@ const Chat = () => {
     document.getElementsByName('userText')[0].focus()
   }
 
-  const addGiphy = (giphy) => {
-    console.log(giphy)
+  const addGiphy = ({ images }) => {
+    const objMsg = {
+      url: images.fixed_width.url,
+      preview: images['480w_still'].url,
+    }
+
+    const obj = {
+      userInfo: user,
+      message: JSON.stringify(objMsg),
+      type: 2,
+    }
+    socket.emit('send_message', obj)
+    setOpenGiphy(false)
     document.getElementsByName('userText')[0].focus()
   }
 
