@@ -130,7 +130,13 @@ const Chat = () => {
   }
 
   const handleEscapeOutside = (e) => {
-    if (e.target.id !== 'emojiIcons' && e.target.id !== 'userText') {
+    if (e) {
+      if (e.target.id !== 'emojiIcons' && e.target.id !== 'userText') {
+        setOpenEmoji(false)
+        document.getElementsByName('userText')[0].focus()
+      }
+    } else {
+      // si presiono esc
       setOpenEmoji(false)
       document.getElementsByName('userText')[0].focus()
     }
