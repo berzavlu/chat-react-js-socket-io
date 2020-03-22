@@ -2,10 +2,14 @@
 
 ### Instalación en W10
 
-Ejecutar el directorio de mongo: mongod --dbpath "C:\Program Files\MongoDB\data\db"
-Ejecutar mongo y crear una bd
-Crear un usuario
-`db.createUser({ user: "mongoadmin" , pwd: "mongoadmin", roles: ["userAdminAnyDatabase", "dbAdminAnyDatabase", "readWriteAnyDatabase"]})`
+Ejecutar el directorio de mongo:
+`mongod --dbpath "C:\Program Files\MongoDB\data\db"`
+Ejecutar mongo:
+`mongo`
+Crear una bd:
+`use chat`
+Crear un usuario:
+`db.createUser({ user: "mongoadmin", pwd: "mongoadmin", roles: [ "userAdminAnyDatabase", "dbAdminAnyDatabase", "readWriteAnyDatabase" ] })`
 
 Instalar dependencias e iniciar servidor
 
