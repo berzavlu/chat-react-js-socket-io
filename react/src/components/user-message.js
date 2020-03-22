@@ -7,7 +7,7 @@ moment.locale('es')
 const getAvatar = (e) => {
   return (
     <div className='chat__messages__user--avatar'>
-      <img src={`https://graph.facebook.com/${e.user.id}/picture?type=small`} alt='' />
+      <img src={`http://localhost:3001/public/profiles/${e.user.id}.jpg`} alt='' />
     </div>
   )
 }

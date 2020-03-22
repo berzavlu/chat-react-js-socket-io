@@ -12,6 +12,8 @@ import UserMessage from '../../components/user-message'
 
 const langEmoji = { search: 'Buscar', categories: { search: 'Résultats de recherche', recent: 'Recientes' } }
 
+const urlNode = 'http://localhost:3001'
+
 let socket
 
 function insertAtCursor(field, myValue) {
@@ -117,7 +119,6 @@ const Chat = () => {
   }
 
   const addEmoji = (emoji) => {
-    console.log(emoji.native)
     insertAtCursor(document.getElementsByName('userText')[0], emoji.native)
     document.getElementsByName('userText')[0].focus()
   }
@@ -135,7 +136,7 @@ const Chat = () => {
       document.getElementsByName('userText')[0].focus()
     }
   }
-
+  console.log(messages)
   return (
     <div className='chat'>
       <div className='chat__area'>
@@ -143,7 +144,7 @@ const Chat = () => {
           <ul>
             {usersOnline.map((e) => (
               <li key={e.fbId}>
-                <img alt='' src={e.image} />
+                <img alt='' src={urlNode + e.image} />
               </li>
             ))}
           </ul>

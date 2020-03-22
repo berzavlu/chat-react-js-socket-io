@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const http = require('http')
 const socketIO = require('socket.io')
 const config = require('./config/keys')
+const saveImage = require('./libs/save-image')
 
 // Modelos para el mongo
 const User = require('./models/User')
@@ -60,32 +61,39 @@ io.on('connection', (socket) => {
     const objUsuario = {
       name,
       email,
-      image: picture.data.url,
       fbId,
+      image: `/public/profiles/${fbId}.jpg`,
       active: '1',
     }
+
     User.findOne({ fbId })
       .then((objUser) => {
         if (!objUser) {
           const newUser = new User(objUsuario)
           newUser
             .save()
-            .then(() => {
-              console.log('usuario registrado correctamente')
+            .then((res) => {
+              console.log(res)
+              saveImage(picture.data.url, './uploads/profiles/', `${fbId}.jpg`, function() {
+                console.log('usuario registrado correctamente')
+                usersOnline.push(res)
+                socket.fbId = fbId
+                io.sockets.emit('users_online', usersOnline)
+              })
             })
             .catch(() => {
               console.log('ups, ocurrió un error al registrar el usuario')
             })
         } else {
           console.log('ya existía el usuario, solo logeo')
+          usersOnline.push(objUser)
+          socket.fbId = fbId
+          io.sockets.emit('users_online', usersOnline)
         }
       })
       .catch(() => {
         console.log('ocurrió un error en el modelo usuario')
       })
-    usersOnline.push(objUsuario)
-    socket.fbId = fbId
-    io.sockets.emit('users_online', usersOnline)
   })
 
   socket.on('send_message', (obj) => {
@@ -98,7 +106,6 @@ io.on('connection', (socket) => {
         name: obj.userInfo.name,
         email: obj.userInfo.email,
         id: obj.userInfo.id,
-        image: obj.userInfo.picture.data.url,
       },
     }
     const message = new Messages(objMessage)
@@ -130,6 +137,7 @@ io.on('connection', (socket) => {
 })
 
 /* Below mentioned steps are performed to return the Frontend build of create-react-app from build folder of backend */
+app.use('/public', express.static(__dirname + '/uploads'))
 
 app.use(express.static('build'))
 

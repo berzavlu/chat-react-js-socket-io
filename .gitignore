@@ -1,4 +1,8 @@
 react/node_modules/
+react/package-lock.json
+react/yarn.lock
+
 node/node_modules/
 node/package-lock.json
-react/package-lock.json
+node/yarn.lock
+node/uploads/profiles/*
