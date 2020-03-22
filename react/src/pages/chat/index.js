@@ -180,6 +180,7 @@ const Chat = () => {
         <FacebookLogin
           appId='538747520074029'
           fields='name,email,picture'
+          autoLoad
           callback={responseFacebook}
           render={(renderProps) => (
             <button onClick={renderProps.onClick}>

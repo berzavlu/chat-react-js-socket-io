@@ -79,13 +79,19 @@ io.on('connection', (socket) => {
         } else {
           console.log('ya existía el usuario, solo logeo')
         }
+        const existFbId = usersOnline.some((e) => e.fbId === fbId)
+        if (!existFbId) {
+          usersOnline.push(objUsuario)
+          socket.fbId = fbId
+          io.sockets.emit('users_online', usersOnline)
+        } else {
+          // si es que existe el usuario logeado le asigno un id 0
+          socket.fbId = 0
+        }
       })
       .catch(() => {
         console.log('ocurrió un error en el modelo usuario')
       })
-    usersOnline.push(objUsuario)
-    socket.fbId = fbId
-    io.sockets.emit('users_online', usersOnline)
   })
 
   socket.on('send_message', (obj) => {
@@ -123,9 +129,11 @@ io.on('connection', (socket) => {
 
   // Detecta cuando el usuario se desconecta
   socket.on('disconnect', () => {
-    const index = usersOnline.findIndex((e) => e.fbId === socket.fbId)
-    usersOnline.splice(index, 1)
-    io.sockets.emit('users_online', usersOnline)
+    if (socket.fbId !== 0) {
+      const index = usersOnline.findIndex((e) => e.fbId === socket.fbId)
+      usersOnline.splice(index, 1)
+      io.sockets.emit('users_online', usersOnline)
+    }
   })
 })
 
