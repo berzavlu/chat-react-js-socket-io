@@ -1,0 +1,31 @@
+.giphyArea {
+  align-self: center;
+  position: absolute;
+  bottom: 110px;
+  left: 5px;
+  &__box {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+    display: inline-block;
+    color: #222427;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    background: #fff;
+    padding: 1rem;
+    &--input {
+      margin-bottom: 0.7rem;
+      input {
+        border: 0;
+        padding: 0 0 0.4rem 0;
+        border-bottom: 1px solid #d7dee2;
+        color: #233a54;
+        &::placeholder {
+          color: #636f7d;
+        }
+        &:focus {
+          border-color: #b2bcc2;
+        }
+      }
+    }
+  }
+}

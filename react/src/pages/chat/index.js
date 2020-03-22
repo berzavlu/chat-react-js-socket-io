@@ -4,6 +4,7 @@ import io from 'socket.io-client'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import { Picker } from 'emoji-mart'
 import Scrollbar from 'react-scrollbars-custom'
+import ReactGiphySearchbox from 'react-giphy-searchbox'
 import EscapeOutside from 'react-escape-outside'
 import { TiSocialFacebook } from 'react-icons/ti'
 import { GoHeart } from 'react-icons/go'
@@ -39,6 +40,7 @@ const Chat = () => {
   const [user, setUser] = useState({})
   const [isOVer, setIsOver] = useState(false)
   const [openEmoji, setOpenEmoji] = useState(false)
+  const [openGiphy, setOpenGiphy] = useState(false)
 
   const scrollMessages = useRef(null)
 
@@ -117,8 +119,12 @@ const Chat = () => {
   }
 
   const addEmoji = (emoji) => {
-    console.log(emoji.native)
     insertAtCursor(document.getElementsByName('userText')[0], emoji.native)
+    document.getElementsByName('userText')[0].focus()
+  }
+
+  const addGiphy = (giphy) => {
+    console.log(giphy)
     document.getElementsByName('userText')[0].focus()
   }
 
@@ -129,7 +135,14 @@ const Chat = () => {
     }
   }
 
-  const handleEscapeOutside = (e) => {
+  const onGiphy = () => {
+    setOpenGiphy(!openGiphy)
+    if (!openGiphy) {
+      document.getElementsByName('userText')[0].focus()
+    }
+  }
+
+  const handleEscapeOutsideEmoji = (e) => {
     if (e) {
       if (e.target.id !== 'emojiIcons' && e.target.id !== 'userText') {
         setOpenEmoji(false)
@@ -138,6 +151,19 @@ const Chat = () => {
     } else {
       // si presiono esc
       setOpenEmoji(false)
+      document.getElementsByName('userText')[0].focus()
+    }
+  }
+
+  const handleEscapeOutsideGiphy = (e) => {
+    if (e) {
+      if (e.target.id !== 'giphyGifs' && e.target.id !== 'userText') {
+        setOpenGiphy(false)
+        document.getElementsByName('userText')[0].focus()
+      }
+    } else {
+      // si presiono esc
+      setOpenGiphy(false)
       document.getElementsByName('userText')[0].focus()
     }
   }
@@ -163,10 +189,30 @@ const Chat = () => {
         <div className='chat__writeArea'>
           <div className='chat__writeArea__options'>
             <div className={`chat__writeArea__options--emoji${openEmoji ? ' chat__writeArea__options--active' : ''}`} onClick={onEmoji} id='emojiIcons' />
-            <div className='chat__writeArea__options--picture' />
+            <div className={`chat__writeArea__options--picture${openGiphy ? ' chat__writeArea__options--active' : ''}`} onClick={onGiphy} id='giphyGifs' />
             {openEmoji && (
-              <EscapeOutside onEscapeOutside={handleEscapeOutside}>
+              <EscapeOutside onEscapeOutside={handleEscapeOutsideEmoji}>
                 <Picker sheetSize={20} emojiSize={20} native i18n={langEmoji} style={{ position: 'absolute', bottom: '110px', left: '5px' }} title='Elige tu emoji' emoji='point_up' onSelect={addEmoji} />
+              </EscapeOutside>
+            )}
+            {openGiphy && (
+              <EscapeOutside onEscapeOutside={handleEscapeOutsideGiphy}>
+                <div className='giphyArea'>
+                  <div className='giphyArea__box'>
+                    <ReactGiphySearchbox
+                      apiKey='jpYD1Xs4mJLdIF9UmaklnFpM66qIhfEi' // Required: get your on https://developers.giphy.com
+                      onSelect={addGiphy}
+                      poweredByGiphyImage='/assets/images/poweredByGiphy.png'
+                      loadingImage='/assets/images/spinner.png'
+                      searchFormClassName='giphyArea__box--input'
+                      searchPlaceholder='Buscar Gif'
+                      masonryConfig={[
+                        { columns: 2, imageWidth: 110, gutter: 5 },
+                        { mq: '700px', columns: 3, imageWidth: 120, gutter: 5 },
+                      ]}
+                    />
+                  </div>
+                </div>
               </EscapeOutside>
             )}
           </div>

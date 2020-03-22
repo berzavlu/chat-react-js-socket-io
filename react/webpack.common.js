@@ -30,25 +30,36 @@ module.exports = {
       },
       {
         test: /\.s(a|c)ss$/,
-        use: [
-          { loader: 'style-loader' },
-          { loader: 'css-loader' },
-          { loader: 'sass-loader' },
-        ],
+        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }, { loader: 'sass-loader' }],
       },
       {
         test: /\.css$/,
         include: /node_modules/,
-        loaders: ['style-loader', 'css-loader'],
+        use: [
+          { loader: 'style-loader' },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(gif|png|jpe?g|svg)$/i,
+        use: [
+          'file-loader',
+          {
+            loader: 'image-webpack-loader',
+            options: {
+              bypassOnDebug: true, // webpack@1.x
+              disable: true, // webpack@2.x and newer
+            },
+          },
+        ],
       },
     ],
   },
   devtool: 'source-map',
-  plugins: [
-    new HtmlWebPackPlugin({ template: './public/index.html' }),
-    new ErrorOverlayPlugin(),
-    new CleanWebpackPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new CopyWebpackPlugin([{ from: 'assets/images', to: 'assets/images' }]),
-  ],
+  plugins: [new HtmlWebPackPlugin({ template: './public/index.html' }), new ErrorOverlayPlugin(), new CleanWebpackPlugin(), new webpack.HotModuleReplacementPlugin(), new CopyWebpackPlugin([{ from: 'assets/images', to: 'assets/images' }])],
 }
