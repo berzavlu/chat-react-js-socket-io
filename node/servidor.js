@@ -55,6 +55,39 @@ io.on('connection', (socket) => {
       })
   })
 
+  function enviarAnuncioLogin(data, msg) {
+    const blocked = userBlocked.some((e) => e.fbId === socket.fbId)
+
+    const objMessage = {
+      message: msg,
+      user: {
+        name: data.name,
+        email: data.email,
+        id: data.fbId,
+        image: data.image,
+      },
+      type: 3,
+    }
+    const message = new Messages(objMessage)
+    if (!blocked) {
+      message
+        .save()
+        .then(() => {
+          console.log('enviarAnuncioLogin enviado correctamente')
+          Messages.find({})
+            .then((resAlls) => {
+              io.sockets.emit('new_message', resAlls)
+            })
+            .catch(() => {
+              console.log('ups, ocurrió un error al consumir los enviarAnuncioLogin')
+            })
+        })
+        .catch(() => {
+          console.log('ups, ocurrió un error al guardar el enviarAnuncioLogin')
+        })
+    }
+  }
+
   // Detecto login del usuario
   socket.on('login_user', ({ name, email, id: fbId, picture }) => {
     const objUsuario = {
@@ -64,34 +97,40 @@ io.on('connection', (socket) => {
       fbId,
       active: '1',
     }
-    User.findOne({ fbId })
-      .then((objUser) => {
-        if (!objUser) {
-          const newUser = new User(objUsuario)
-          newUser
-            .save()
-            .then(() => {
-              console.log('usuario registrado correctamente')
-            })
-            .catch(() => {
-              console.log('ups, ocurrió un error al registrar el usuario')
-            })
-        } else {
-          console.log('ya existía el usuario, solo logeo')
-        }
-        const existFbId = usersOnline.some((e) => e.fbId === fbId)
-        if (!existFbId) {
-          usersOnline.push(objUsuario)
-          socket.fbId = fbId
-          io.sockets.emit('users_online', usersOnline)
-        } else {
-          // si es que existe el usuario logeado le asigno un id 0
-          socket.fbId = 0
-        }
-      })
-      .catch(() => {
-        console.log('ocurrió un error en el modelo usuario')
-      })
+    // Asigno el fbId al socket
+    socket.fbId = objUsuario.fbId
+    const blocked = userBlocked.some((e) => e.fbId === socket.fbId)
+    if (!blocked) {
+      // si no está bloqueado
+      User.findOne({ fbId })
+        .then((objUser) => {
+          if (!objUser) {
+            const newUser = new User(objUsuario)
+            newUser
+              .save()
+              .then(() => {
+                console.log('usuario registrado correctamente')
+              })
+              .catch(() => {
+                console.log('ups, ocurrió un error al registrar el usuario')
+              })
+          } else {
+            console.log('ya existía el usuario, solo logeo')
+          }
+          const existFbId = usersOnline.some((e) => e.fbId === fbId)
+          if (!existFbId) {
+            usersOnline.push(objUsuario)
+            io.sockets.emit('users_online', usersOnline)
+            enviarAnuncioLogin(objUsuario, 'se unió al chat')
+          } else {
+            // si es que existe el usuario logeado le asigno un id 0
+            socket.fbId = 0
+          }
+        })
+        .catch(() => {
+          console.log('ocurrió un error en el modelo usuario')
+        })
+    }
   })
 
   socket.on('send_message', (obj) => {
@@ -116,7 +155,7 @@ io.on('connection', (socket) => {
           console.log('mensaje enviado correctamente')
           Messages.find({})
             .then((resAlls) => {
-              io.emit('new_message', resAlls)
+              io.sockets.emit('new_message', resAlls)
             })
             .catch(() => {
               console.log('ups, ocurrió un error al consumir los mensajes')
@@ -131,9 +170,14 @@ io.on('connection', (socket) => {
   // Detecta cuando el usuario se desconecta
   socket.on('disconnect', () => {
     if (socket.fbId !== 0) {
-      const index = usersOnline.findIndex((e) => e.fbId === socket.fbId)
-      usersOnline.splice(index, 1)
-      io.sockets.emit('users_online', usersOnline)
+      const blocked = userBlocked.some((e) => e.fbId === socket.fbId)
+      if (!blocked) {
+        const index = usersOnline.findIndex((e) => e.fbId === socket.fbId)
+        const bkUser = { ...usersOnline[index] }
+        usersOnline.splice(index, 1)
+        io.sockets.emit('users_online', usersOnline)
+        enviarAnuncioLogin(bkUser, 'se fue del chat')
+      }
     }
   })
 })

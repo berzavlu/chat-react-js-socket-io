@@ -5,6 +5,8 @@ import moment from 'moment'
 import GifPlayer from 'react-gif-player'
 
 moment.locale('es')
+const TYPE_GIF = 2
+const TYPE_ANUNCIO = 3
 
 const getAvatar = (e) => {
   return (
@@ -23,7 +25,7 @@ const getActions = () => {
 }
 
 const getMessages = (e) => {
-  if (e.type === 2) {
+  if (e.type === TYPE_GIF) {
     return <GifComponent data={e} />
   }
   return (
@@ -45,9 +47,13 @@ const getInfo = (e) => {
 
 const UserMessage = ({ user, data }) => {
   return (
-    <div className='chat__messages--row'>
+    <div className='chat__messages__wrap'>
       {data.map((e) => {
-        const isLoged = e.user.id === user.userID
+        const userData = Object.keys(user).length > 0
+        const isLoged = userData ? e.user.id === user.userID : false
+        if (e.type === TYPE_ANUNCIO) {
+          return <AnuncioComponent data={e} key={e._id} />
+        }
         return (
           <div className={`chat__messages__user${isLoged ? ' chat__messages__userlogged' : ''}`} key={e._id}>
             {isLoged ? getActions(e) : getAvatar(e)}
@@ -107,6 +113,21 @@ class GifComponent extends React.Component {
       </div>
     )
   }
+}
+
+const AnuncioComponent = ({ data }) => {
+  return (
+    <div className='chat__messages__anuncio'>
+      <div className='chat__messages__anuncio__log'>
+        <div className='chat__messages__anuncio__log--image'>
+          <img src={data.user.image} alt='' />
+        </div>
+        <div className='chat__messages__anuncio__log--name'>{data.user.name}</div>
+        <div className='chat__messages__anuncio__log--text'>{data.message}</div>
+        <div className='chat__messages__anuncio__log--time'>{moment(data.date).format('h:mm a')}</div>
+      </div>
+    </div>
+  )
 }
 
 export default UserMessage
