@@ -26,3 +26,9 @@
 @import 'components/chat';
 @import 'giphy';
 @import '~emoji-mart/css/emoji-mart.css';
+
+body {
+  @media screen and (prefers-color-scheme: dark) {
+    background-color: #000;
+  }
+}

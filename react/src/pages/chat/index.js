@@ -206,7 +206,7 @@ const Chat = () => {
             <div className={`chat__writeArea__options--picture${openGiphy ? ' chat__writeArea__options--active' : ''}`} onClick={onGiphy} id='giphyGifs' />
             {openEmoji && (
               <EscapeOutside onEscapeOutside={handleEscapeOutsideEmoji}>
-                <Picker sheetSize={20} emojiSize={20} native i18n={langEmoji} style={{ position: 'absolute', bottom: '110px', left: '5px' }} title='Elige tu emoji' emoji='point_up' onSelect={addEmoji} />
+                <Picker sheetSize={20} emojiSize={20} native i18n={langEmoji} style={{ position: 'absolute', bottom: '90px', left: '5px' }} title='Elige tu emoji' emoji='point_up' onSelect={addEmoji} />
               </EscapeOutside>
             )}
             {openGiphy && (
