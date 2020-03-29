@@ -1,2 +1,7 @@
-/* Layout
-  =============== */
+body {
+  font-family: $font-family;
+  background-color: $background-color;
+  @media screen and (prefers-color-scheme: dark) {
+    background-color: $background-color--dark;
+  }
+}
